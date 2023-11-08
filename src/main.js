@@ -1,5 +1,5 @@
 try {
-    const { box, rect } = require("../crisp-game-lib/src/rect");
+    const { rect, box } = require("../crisp-game-lib/src/rect");
     const { vec, input } = require("../crisp-game-lib/src/main");
 }
 catch (err) {
@@ -31,29 +31,26 @@ options = {
     }
 };
 
+/**
+* @type { Player }
+*/
 let player
 
 function init() {
-    player = {
-        pos: vec(10, G.HEIGHT * 0.5),
-        vel: vec(0,1),
-        accel: 0.5,
-        width: 4,
-        obj: null
-    }
+    player = new Player()
 }
 
 function update() {
     if (!ticks) {
         init()
     }
-    playerPhysics(player)
     color("cyan");
+    // box(vec(4, 4), 4)
+    player.update()
 }
 
 
 function renderMap() {
-    rect()
 }
 
 
