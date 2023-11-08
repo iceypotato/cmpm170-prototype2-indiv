@@ -1,0 +1,6 @@
+{
+  "compilerOptions": {
+    "typeRoots": ["./crisp-game-lib/dist/*"]
+  },
+  "exclude": ["node_modules"],
+}
