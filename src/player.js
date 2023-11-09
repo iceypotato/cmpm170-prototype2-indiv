@@ -1,18 +1,18 @@
 class Player {
 
     constructor() {
-        this.gravityAccel = 0.2
         this.hasGravity = true
+        this.gravityDirection = 1  // positive for falling, negative for rising
         this.canJump = false
         this.isCurrentlyJumping = false
-        this.grounded = false
         /** @type {Vector} */
         this.pos = vec(5,5)
-        this.width = 4
         /** @type {Vector} */
         this.velocity = vec(0,0)
+        this.gravityAccel = 0.2
         this.maxFallSpeed = 4
         this.jumpAccel = 0.5
+        this.width = 4
     }
 
     update() {
@@ -20,6 +20,9 @@ class Player {
         this.obj = box(this.pos, this.width)
         this.fall()
         this.jump()
+
+        if (this.pos.y +)
+        this.pos.y += this.velocity.y 
     }
 
     /**
@@ -33,10 +36,10 @@ class Player {
         if (this.pos.y + 1 >= G.HEIGHT) {
             this.velocity = vec(this.velocity.x, 0)
         }
-        else if (this.velocity.y < this.maxFallSpeed) {
-            this.velocity.add(0, this.gravityAccel)
+        else if (this.gravityDirection * this.velocity.y < this.maxFallSpeed) {
+            this.velocity.add(0, this.gravityDirection * this.gravityAccel)
         }
-        this.pos.y += this.velocity.y 
+        
     }
 
     jump() {
@@ -48,7 +51,6 @@ class Player {
         if (this.velocity.y < -2) {
             this.isCurrentlyJumping = false
         }
-        this.pos.y += this.velocity.y
 
         // if (this.currentVelY > -this.maxJumpSpeed && !this.isFalling) {
         //     this.isCurrentlyJumping = true
