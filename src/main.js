@@ -40,13 +40,18 @@ function init() {
     player = new Player()
 }
 
+var posx = 0
+
 function update() {
     if (!ticks) {
         init()
     }
     color("cyan");
-    // box(vec(4, 4), 4)
     player.update()
+    console.log(player.isCurrentlyJumping)
+    if (input.isJustPressed) {
+        player.isCurrentlyJumping = true
+    }
 }
 
 
