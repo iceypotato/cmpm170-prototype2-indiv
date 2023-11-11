@@ -4,22 +4,24 @@ class Player {
      * @param {Map} map 
      */
     constructor(map) {
+        // Player Flags
         this.hasGravity = true
         this.gravityDirection = 1  // positive for falling, negative for rising
         this.canJump = false
         this.isGrounded = false
         this.canDoubleJump = false
         this.isCurrentlyJumping = false
+
+        // Player Stats
         /** @type {Vector} */
-        this.pos = vec(18,92-4)
+        this.pos = vec(18,88)
         // this.pos = vec(18,95)
         /** @type {Vector} */
-        this.velocity = vec(0,4)
+        this.velocity = vec(0,0)
         this.gravityAccel = 0.2
         this.maxFallSpeed = 4
         this.jumpAccel = 0.5
         this.width = 4
-        this.radius = this.width / 2
         this.map = map
     }
 
@@ -77,7 +79,8 @@ class Player {
 
     ground(distanceLeft) {
         this.velocity = vec(this.velocity.x, distanceLeft)
-        this.pos.y += this.velocity.y 
+        this.pos.y += this.velocity.y
+        this.pos.y = Math.round(this.pos.y)
         this.velocity = vec(this.velocity.x, 0)
         this.canJump = true
         this.isGrounded = true
@@ -126,15 +129,15 @@ class Player {
      */
     checkTopAndBottomCollision(map) {
         for (var i = 0; i < this.width; i++) {
-            var playerCurrPixel = vec(this.pos.x + i, this.pos.y + (this.gravityDirection === 1) * (this.width - 1))
-            var playerNextPixel = vec(this.pos.x + i,  this.pos.y + (this.gravityDirection === 1) * (this.width - 1) + this.velocity.y)
+            var playerBorderPixel = vec(this.pos.x + i, this.pos.y + ((this.gravityDirection === 1) ? this.width : -1))  // Represents one pixel above/below the top/bottom
+            var playerNextPixel = vec(this.pos.x + i,  this.pos.y + ((this.gravityDirection === 1) ? this.width : -1) + this.velocity.y)
             var closestPixel = {}
             var gonnaCollide = false
             /** @type {Rectangle} */
             var closestRect = null
             map.rectangles.forEach((r) => {
                 if (r.isOverlapping(playerNextPixel)) {
-                    closestPixel = r.closestPixel(playerCurrPixel)
+                    closestPixel = r.closestPixel(playerBorderPixel)
                     closestRect = r
                     gonnaCollide = true
                     return
@@ -143,11 +146,15 @@ class Player {
             // playerPixel = vec(playerPixel.x, playerPixel.y - this.gravityDirection)
             // rect y = 92, player y should be 88
             if (gonnaCollide && !this.isCurrentlyJumping) {
-                closestPixel = closestRect.closestPixel(playerCurrPixel)
-                this.ground(this.gravityDirection * -closestPixel.dist)
+                closestPixel = closestRect.closestPixel(playerBorderPixel)
+                this.ground(this.gravityDirection * closestPixel.dist)
                 console.log("standing on top")
                 break
             }
+            // else {
+            //     this.canJump = false
+            //     this.isGrounded = false
+            // }
         }
     }
 
