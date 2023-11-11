@@ -35,9 +35,14 @@ options = {
 * @type { Player }
 */
 let player
+/**
+ * @type { Map }
+ */
+let map
 
 function init() {
     player = new Player()
+    map = new Map()
 }
 
 var posx = 0
@@ -45,13 +50,12 @@ var posx = 0
 function update() {
     if (!ticks) {
         init()
+        map.init()
     }
     color("cyan");
     player.update()
-    console.log(player.isCurrentlyJumping)
-    if (input.isJustPressed) {
-        player.isCurrentlyJumping = true
-    }
+    map.update()
+    // box(vec(6,6), 11)
 }
 
 
