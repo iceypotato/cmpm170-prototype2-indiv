@@ -16,8 +16,8 @@ class Rectangle {
      * @param {Vector} vec 
      * @returns {boolean}
      */
-    isColliding(pixelCoord) {
-        if (this.x < pixelCoord.x && pixelCoord.x < this.x + this.width && this.y < pixelCoord.y && pixelCoord.y < this.y + this.height) {
+    isOverlapping(pixelCoord) {
+        if (this.x <= pixelCoord.x && pixelCoord.x < this.x + this.width && this.y <= pixelCoord.y && pixelCoord.y < this.y + this.height) {
             return true
         }
         // for (var x = 0; x < x.width; x++) {
@@ -26,6 +26,47 @@ class Rectangle {
         //     }
         // }
         return false
+    }
+
+    /**
+     * If the pixelCoordinate is touching a pixel of the rectangle next to each other, not overlapping
+     * @param {Vector} vec 
+     * @returns {boolean}
+     */
+    isTouching(pixelCoord) {
+        for (var x = 0; x < x.width; x++) {
+            for (var y = 0; y < y.height; y++) {
+                if (vec(this.x + x - 1, this.y + y).equals(pixelCoord)
+                || vec(this.x + x + 1, this.y + y).equals(pixelCoord)
+                || vec(this.x + x, this.y + y - 1).equals(pixelCoord)
+                || vec(this.x + x, this.y + y + 1).equals(pixelCoord)
+                ) return true
+                // y + 1 , y - 1, x - 1, x + 1 == pixelcoord
+            }
+        }
+        return false
+    }
+    
+    /**
+     * Find a pixel coordinate of the rectangle that is closest to pixel
+     * @param {Vector} pixel
+     * @returns {Object}
+     * @property {Vector} px
+     * @property {number} dist
+     */
+    closestPixel(pixel) {
+        var closest = Infinity
+        var closestPixel = vec(0,0)
+        for (var x = 0; x < this.width; x++) {
+            for (var y = 0; y < this.height; y++) {
+                var dist = Math.sqrt((pixel.x - this.x + x) * (pixel.x - this.x + x) + (pixel.y - this.y + y) * (pixel.y - this.y + y))
+                if (dist < closest) {
+                    closest = dist
+                    closestPixel = vec(this.x + x, this.y + y)
+                }
+            }
+        }
+        return {px: closestPixel, dist: closest}
     }
 }
 
@@ -41,21 +82,23 @@ class Map {
         this.rectangles.push(new Rectangle(18, 92, 4, 8))
         this.rectangles.push(new Rectangle(46, 84, 4, 16))
         this.rectangles.push(new Rectangle(77, 25 ,4 ,75))
-        this.rectangles.push(new Rectangle(99, 0, 4, 8))
+        this.rectangles.push(new Rectangle(18, 0, 4, 8))
+        // this.rectangles.push(new Rectangle(99, 0, 4, 8))
         this.rectangles.push(new Rectangle(123, 0, 4, 12))
         this.rectangles.push(new Rectangle(147, 0, 4, 75))
     }
 
     init() {
         this.rectangles.forEach((r) => {
-            r.x += -3
+            // r.x -= G.WIDTH
+            r.draw()
         })
     }
 
     update() {
         this.rectangles.forEach((r) => {
             color("black")
-            r.x -= 0.5
+            // r.x -= 0.5
             r.draw()
         })
     }

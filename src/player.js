@@ -7,12 +7,14 @@ class Player {
         this.hasGravity = true
         this.gravityDirection = 1  // positive for falling, negative for rising
         this.canJump = false
+        this.isGrounded = false
         this.canDoubleJump = false
         this.isCurrentlyJumping = false
         /** @type {Vector} */
-        this.pos = vec(4,98)
+        this.pos = vec(18,92-4)
+        // this.pos = vec(18,95)
         /** @type {Vector} */
-        this.velocity = vec(0,0)
+        this.velocity = vec(0,4)
         this.gravityAccel = 0.2
         this.maxFallSpeed = 4
         this.jumpAccel = 0.5
@@ -24,27 +26,24 @@ class Player {
     update() {
         // player.pos = vec()
         if (input.isJustPressed) {
+            if (!this.isGrounded && this.canDoubleJump) {
+                this.gravityDirection *= -1
+                this.canDoubleJump = false
+            }
             if (this.canJump) {
                 this.isCurrentlyJumping = true
                 this.canJump = false
+                this.isGrounded = false
             }
         }
-        this.obj = box(this.pos, this.width)
+        this.obj = rect(this.pos, this.width, this.width)
         this.fall()
         this.jump()
-        this.collideWithMap(this.map)
-        // the origin of the box is the center
-        for (var i = 0; i < this.width; i++) {
-            if (this.pos.y + this.radius + 1 >= G.HEIGHT && this.velocity.y > 0) {
-                var distanceLeft = G.HEIGHT - (this.pos.y + this.radius)
-                this.velocity = vec(this.velocity.x, distanceLeft)
-                this.pos.y += this.velocity.y 
-                this.velocity = vec(this.velocity.x, 0)
-                this.canJump = true
-                break
-            }
-        }
-        // if (this.pos.y + this.radius)
+        this.checkSideCollision(this.map)
+        this.checkTopAndBottomCollision(this.map)
+
+        this.keepInBounds()
+
         this.pos.y += this.velocity.y 
     }
 
@@ -59,7 +58,7 @@ class Player {
         // if (this.pos.y + 1 >= G.HEIGHT) {
         //     this.velocity = vec(this.velocity.x, 0)
         // }
-        else if (this.gravityDirection * this.velocity.y < this.maxFallSpeed) {
+        else if (abs(this.velocity.y) < this.maxFallSpeed && !(this.isGrounded)) {
             this.velocity.add(0, this.gravityDirection * this.gravityAccel)
         }
         
@@ -69,31 +68,34 @@ class Player {
         if (!this.isCurrentlyJumping) return
         // debugger
         
-        this.velocity.add(0, -this.jumpAccel)
+        this.velocity.add(0, this.gravityDirection * -this.jumpAccel)
 
-        if (this.velocity.y < -2) {
+        if (abs(this.velocity.y) > 2) {
             this.isCurrentlyJumping = false
         }
+    }
 
-        // if (this.currentVelY > -this.maxJumpSpeed && !this.isFalling) {
-        //     this.isCurrentlyJumping = true
-        //     this.hasJump = false
-        //     if (this.currentVelY - this.jumpAccel < -this.maxJumpSpeed) {
-        //         this.currentVelY = -this.maxJumpSpeed
-        //     }
-        //     else this.currentVelY -= this.jumpAccel
-            
-        // }
-        // if (this.isCurrentlyJumping) {
-        //     this.jumpDistance += Math.abs(this.currentVelY)
-        // }
-        // if (this.jumpDistance >= this.jumpHeight) {
-        //     this.isFalling = true
-        //     this.isCurrentlyJumping = false
-        //     this.jumpDistance = 0
-        // }
-        // this.sprite.setVelocity(this.currentVelX, this.currentVelY)
-        // this.currentPos = this.sprite.position
+    ground(distanceLeft) {
+        this.velocity = vec(this.velocity.x, distanceLeft)
+        this.pos.y += this.velocity.y 
+        this.velocity = vec(this.velocity.x, 0)
+        this.canJump = true
+        this.isGrounded = true
+        this.canDoubleJump = true
+    }
+
+    keepInBounds() {
+        for (var i = 0; i < this.width; i++) {
+            if (
+            (this.pos.y + (this.width - 1) + this.velocity.y >= G.HEIGHT
+            || this.pos.y + this.velocity.y < 0)
+            && !this.isCurrentlyJumping
+            ) {
+                var distanceLeft = (this.gravityDirection === 1) * G.HEIGHT - (this.pos.y + (this.gravityDirection === 1) * this.width)
+                this.ground(distanceLeft)
+                break
+            }
+        }
     }
 
     /**
@@ -110,12 +112,42 @@ class Player {
     /**
      * @param {Map} map 
      */
-    collideWithMap(map) {
+    checkSideCollision(map) {
         for (var i = 0; i < this.width; i++) {
-            var playerPixel = vec(this.pos.x + this.radius, this.pos.y - this.radius + i)
+            var playerPixel = vec(this.pos.x + this.width - 1, this.pos.y + i)
             map.rectangles.forEach((r) => {
-                if (r.isColliding(playerPixel)) console.log("fgdfys hxuidlsdfhyui")
+                if (r.isOverlapping(playerPixel)) end("You died")
             })
+        }
+    }
+
+    /**
+     * @param {Map} map 
+     */
+    checkTopAndBottomCollision(map) {
+        for (var i = 0; i < this.width; i++) {
+            var playerCurrPixel = vec(this.pos.x + i, this.pos.y + (this.gravityDirection === 1) * (this.width - 1))
+            var playerNextPixel = vec(this.pos.x + i,  this.pos.y + (this.gravityDirection === 1) * (this.width - 1) + this.velocity.y)
+            var closestPixel = {}
+            var gonnaCollide = false
+            /** @type {Rectangle} */
+            var closestRect = null
+            map.rectangles.forEach((r) => {
+                if (r.isOverlapping(playerNextPixel)) {
+                    closestPixel = r.closestPixel(playerCurrPixel)
+                    closestRect = r
+                    gonnaCollide = true
+                    return
+                }
+            })
+            // playerPixel = vec(playerPixel.x, playerPixel.y - this.gravityDirection)
+            // rect y = 92, player y should be 88
+            if (gonnaCollide && !this.isCurrentlyJumping) {
+                closestPixel = closestRect.closestPixel(playerCurrPixel)
+                this.ground(this.gravityDirection * -closestPixel.dist)
+                console.log("standing on top")
+                break
+            }
         }
     }
 

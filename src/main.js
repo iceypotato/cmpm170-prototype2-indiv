@@ -56,7 +56,13 @@ function update() {
     color("cyan");
     player.update()
     map.update()
+
+    // var a = rect(18, 75, 10, 10)
+    // if (a.isColliding.rect.cyan) {
+    //     console.log("epic")
+    // }
     // box(vec(6,6), 11)
+    // box(2, 2, 3)
 }
 
 
