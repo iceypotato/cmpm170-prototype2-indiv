@@ -1,13 +1,16 @@
 class Player {
 
-    constructor() {
+    /**
+     * @param {Map} map 
+     */
+    constructor(map) {
         this.hasGravity = true
         this.gravityDirection = 1  // positive for falling, negative for rising
         this.canJump = false
         this.canDoubleJump = false
         this.isCurrentlyJumping = false
         /** @type {Vector} */
-        this.pos = vec(5,0)
+        this.pos = vec(4,98)
         /** @type {Vector} */
         this.velocity = vec(0,0)
         this.gravityAccel = 0.2
@@ -15,6 +18,7 @@ class Player {
         this.jumpAccel = 0.5
         this.width = 4
         this.radius = this.width / 2
+        this.map = map
     }
 
     update() {
@@ -28,7 +32,7 @@ class Player {
         this.obj = box(this.pos, this.width)
         this.fall()
         this.jump()
-
+        this.collideWithMap(this.map)
         // the origin of the box is the center
         for (var i = 0; i < this.width; i++) {
             if (this.pos.y + this.radius + 1 >= G.HEIGHT && this.velocity.y > 0) {
@@ -100,6 +104,18 @@ class Player {
             for (var j = 0; i < this.width; j++) {
 
             }
+        }
+    }
+    
+    /**
+     * @param {Map} map 
+     */
+    collideWithMap(map) {
+        for (var i = 0; i < this.width; i++) {
+            var playerPixel = vec(this.pos.x + this.radius, this.pos.y - this.radius + i)
+            map.rectangles.forEach((r) => {
+                if (r.isColliding(playerPixel)) console.log("fgdfys hxuidlsdfhyui")
+            })
         }
     }
 

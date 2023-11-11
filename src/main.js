@@ -41,8 +41,9 @@ let player
 let map
 
 function init() {
-    player = new Player()
     map = new Map()
+    player = new Player(map)
+
 }
 
 var posx = 0

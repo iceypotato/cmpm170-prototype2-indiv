@@ -10,6 +10,23 @@ class Rectangle {
     draw() {
         this.collider = rect(this.x, this.y, this.width, this.height)
     }
+
+    /**
+     * 
+     * @param {Vector} vec 
+     * @returns {boolean}
+     */
+    isColliding(pixelCoord) {
+        if (this.x < pixelCoord.x && pixelCoord.x < this.x + this.width && this.y < pixelCoord.y && pixelCoord.y < this.y + this.height) {
+            return true
+        }
+        // for (var x = 0; x < x.width; x++) {
+        //     for (var y = 0; y < y.height; y++) {
+        //         if (vec(this.x + x, this.y + y).equals(pixelCoord)) return true
+        //     }
+        // }
+        return false
+    }
 }
 
 class Map {
@@ -31,7 +48,7 @@ class Map {
 
     init() {
         this.rectangles.forEach((r) => {
-            r.x += 100
+            r.x += -3
         })
     }
 
