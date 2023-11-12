@@ -82,6 +82,7 @@ class Map {
         this.rectangles = []
 
         // this.rectangles.push(new Rectangle())
+        // this.rectangles.push(new Rectangle(10, 90, 4, 4))  // test rectangle
         this.rectangles.push(new Rectangle(18, 92, 4, 8))
         this.rectangles.push(new Rectangle(44, 0, 4, 56))
         this.rectangles.push(new Rectangle(46, 84, 4, 16))
@@ -92,7 +93,6 @@ class Map {
         this.rectangles.push(new Rectangle(147, 0, 4, 75))
         this.rectangles.push(new Rectangle(196, 12, 4, 100))
         this.rectangles.push(new Rectangle(216, 0, 4, 11))
-        // this.rectangles.push(new Rectangle())
     }
 
     init() {
