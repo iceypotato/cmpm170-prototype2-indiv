@@ -54,12 +54,13 @@ class Rectangle {
      * @property {Vector} px
      * @property {number} dist
      */
-    closestPixel(pixel) {
+    closestPixelVertical(pixel) {
         var closest = Infinity
         var closestPixel = vec(0,0)
         for (var x = 0; x < this.width; x++) {
             for (var y = 0; y < this.height; y++) {
-                var dist = Math.sqrt((pixel.x - (this.x + x)) * (pixel.x - (this.x + x)) + (pixel.y - (this.y + y)) * (pixel.y - (this.y + y)))
+                // var dist = Math.sqrt((pixel.x - (this.x + x)) * (pixel.x - (this.x + x)) + (pixel.y - (this.y + y)) * (pixel.y - (this.y + y)))
+                var dist = Math.sqrt((pixel.y - (this.y + y)) * (pixel.y - (this.y + y)))
                 if (dist < closest) {
                     closest = dist
                     closestPixel = vec(this.x + x, this.y + y)
@@ -73,6 +74,8 @@ class Rectangle {
 class Map {
 
     constructor() {
+        this.moveCounter = 0
+        this.moveRate = 2  // move the map every 2 frames
         /**
          * @type { Array<Rectangle> }
          */
@@ -86,11 +89,13 @@ class Map {
         this.rectangles.push(new Rectangle(99, 0, 4, 8))
         this.rectangles.push(new Rectangle(123, 0, 4, 12))
         this.rectangles.push(new Rectangle(147, 0, 4, 75))
+        // this.rectangles.push(new Rectangle())
     }
 
     init() {
         this.rectangles.forEach((r) => {
             r.x += G.WIDTH
+            // r.x += -4
             r.draw()
         })
     }
@@ -98,8 +103,12 @@ class Map {
     update() {
         this.rectangles.forEach((r) => {
             color("black")
-            r.x -= 0.5
+            if (this.moveCounter >= this.moveRate - 1) {
+                r.x -= 1
+            }
             r.draw()
         })
+        this.moveCounter++
+        if (this.moveCounter >= this.moveRate) this.moveCounter = 0
     }
 }

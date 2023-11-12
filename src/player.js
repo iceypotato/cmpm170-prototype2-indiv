@@ -9,8 +9,10 @@ class Player {
         this.gravityDirection = 1  // positive for falling, negative for rising
         this.canJump = false
         this.isGrounded = false
+        this.isTouchingWorldBorder = false
         this.canDoubleJump = false
         this.isCurrentlyJumping = false
+        this.isFalling = true
 
         // Player Stats
         /** @type {Vector} */
@@ -34,18 +36,18 @@ class Player {
             }
             if (this.canJump) {
                 this.isCurrentlyJumping = true
+                this.isFalling = false
                 this.canJump = false
                 this.isGrounded = false
+                this.isTouchingWorldBorder = false
             }
         }
         this.obj = rect(this.pos, this.width, this.width)
         this.fall()
         this.jump()
         this.checkSideCollision(this.map)
-        this.checkTopAndBottomCollision(this.map)
-
         this.keepInBounds()
-
+        this.checkTopAndBottomCollision(this.map)
         this.pos.y += this.velocity.y 
     }
 
@@ -56,7 +58,7 @@ class Player {
      */
     fall() {
         // player hits the ground
-        if (this.isCurrentlyJumping) return
+        if (!this.isFalling || this.isGrounded) return
         // if (this.pos.y + 1 >= G.HEIGHT) {
         //     this.velocity = vec(this.velocity.x, 0)
         // }
@@ -74,10 +76,11 @@ class Player {
 
         if (abs(this.velocity.y) > 2) {
             this.isCurrentlyJumping = false
+            this.isFalling = true
         }
     }
 
-    ground(distanceLeft) {
+    tpToGround(distanceLeft) {
         this.velocity = vec(this.velocity.x, distanceLeft)
         this.pos.y += this.velocity.y
         this.pos.y = Math.round(this.pos.y)
@@ -85,6 +88,7 @@ class Player {
         this.canJump = true
         this.isGrounded = true
         this.canDoubleJump = true
+        this.isFalling = false
     }
 
     keepInBounds() {
@@ -95,7 +99,8 @@ class Player {
             && !this.isCurrentlyJumping
             ) {
                 var distanceLeft = (this.gravityDirection === 1) * G.HEIGHT - (this.pos.y + (this.gravityDirection === 1) * this.width)
-                this.ground(distanceLeft)
+                this.isTouchingWorldBorder = true
+                this.tpToGround(distanceLeft)
                 break
             }
         }
@@ -137,23 +142,26 @@ class Player {
             var closestRect = null
             map.rectangles.forEach((r) => {
                 if (r.isOverlapping(playerNextPixel)) {
-                    closestPixel = r.closestPixel(playerBorderPixel)
+                    closestPixel = r.closestPixelVertical(playerBorderPixel)
                     closestRect = r
                     gonnaCollide = true
                     return
                 }
             })
-            // playerPixel = vec(playerPixel.x, playerPixel.y - this.gravityDirection)
             // rect y = 92, player y should be 88
             if (gonnaCollide && !this.isCurrentlyJumping) {
-                closestPixel = closestRect.closestPixel(playerBorderPixel)
-                this.ground(this.gravityDirection * closestPixel.dist)
-                console.log("standing on top")
+                closestPixel = closestRect.closestPixelVertical(playerBorderPixel)
+                this.tpToGround(this.gravityDirection * closestPixel.dist)
+                this.isGrounded = true
+                this.isFalling = false
                 break
             }
-            // else {
+            else if (!this.isTouchingWorldBorder) {
+                this.isGrounded = false
+                this.isFalling = true
+            }
+            // if (!this.isGrounded && !this.onPlatform && !this.isCurrentlyJumping) {
             //     this.canJump = false
-            //     this.isGrounded = false
             // }
         }
     }
