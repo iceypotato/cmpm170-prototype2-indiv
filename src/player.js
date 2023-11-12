@@ -16,7 +16,7 @@ class Player {
 
         // Player Stats
         /** @type {Vector} */
-        this.pos = vec(18,88)
+        this.pos = vec(10,50)
         // this.pos = vec(18,95)
         /** @type {Vector} */
         this.velocity = vec(0,0)
@@ -124,7 +124,10 @@ class Player {
         for (var i = 0; i < this.width; i++) {
             var playerPixel = vec(this.pos.x + this.width - 1, this.pos.y + i)
             map.rectangles.forEach((r) => {
-                if (r.isOverlapping(playerPixel)) end("You died")
+                if (r.isOverlapping(playerPixel)) {
+                    color("red")
+                    end("You died")
+                }
             })
         }
     }

@@ -83,18 +83,21 @@ class Map {
 
         // this.rectangles.push(new Rectangle())
         this.rectangles.push(new Rectangle(18, 92, 4, 8))
+        this.rectangles.push(new Rectangle(44, 0, 4, 56))
         this.rectangles.push(new Rectangle(46, 84, 4, 16))
         this.rectangles.push(new Rectangle(77, 25 ,4 ,75))
-        // this.rectangles.push(new Rectangle(18, 0, 4, 8))
+        this.rectangles.push(new Rectangle(114, 30, 4, 70))
         this.rectangles.push(new Rectangle(99, 0, 4, 8))
         this.rectangles.push(new Rectangle(123, 0, 4, 12))
         this.rectangles.push(new Rectangle(147, 0, 4, 75))
+        this.rectangles.push(new Rectangle(196, 12, 4, 100))
+        this.rectangles.push(new Rectangle(216, 0, 4, 11))
         // this.rectangles.push(new Rectangle())
     }
 
     init() {
         this.rectangles.forEach((r) => {
-            r.x += G.WIDTH
+            r.x += 50
             // r.x += -4
             r.draw()
         })
