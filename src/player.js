@@ -137,6 +137,7 @@ class Player {
             this.canDoubleJump = true
         }
         if (!gonnaCollide) {
+            this.canJump = false
             this.isGrounded = false
         }
     }
