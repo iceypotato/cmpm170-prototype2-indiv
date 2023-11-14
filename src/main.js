@@ -12,8 +12,15 @@ const G = {
     HEIGHT: 100
 }
 
-title = "Ligma"
-description = "Obsticle course";
+title = "Cube Jump"
+description =
+`
+Obsticle course
+
+Tap to jump
+Tap while midair to 
+flip gravity
+`;
 
 characters = [
 `
